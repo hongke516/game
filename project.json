@@ -1,0 +1,8 @@
+{
+  "engine": "cocos-creator-js",
+  "packages": "packages",
+  "jsList": [
+    "src/StartScene.js",
+    "src/resource.js"
+  ]
+}
