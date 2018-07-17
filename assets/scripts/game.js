@@ -20,7 +20,14 @@ cc.Class({
         life: 3,
         score: 0,
         total: 0,
+        totalStar: 0,
         clinet: null,
+        mousePosX: 0,
+        mousePosY: 0,
+        numberDisplay: {
+            default: null,
+            type: cc.Label
+        },
         nameDisplay1: {
             default: null,
             type: cc.Label
@@ -61,6 +68,22 @@ cc.Class({
         sushiPrefab: {
             default: null,
             type: cc.Prefab
+        },
+        starPrefab: {
+            default: null,
+            type: cc.Prefab
+        },
+        qiuPrefab: {
+            default: null,
+            type: cc.Prefab
+        },
+        home: {
+            default: null,
+            type: cc.Node
+        },
+        starHome: {
+            default: null,
+            type: cc.Node
         }
         // foo: {
         //     // ATTRIBUTES:
@@ -82,7 +105,7 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad() {
-        this.addSushi()
+
     },
     changeStep() {
         this.timeStep = 4 - Math.floor(this.total / 10)
@@ -114,21 +137,64 @@ cc.Class({
             score: this.score
         })
     },
+    gainLife: function () {
+        this.life += 1;
+        // 更新 scoreDisplay Label 的文字
+        this.lifeDisplay1.string = 'Life: ' + this.life.toString();
+        this.sendMsg({
+            action: 'gainLife',
+            id: this.id,
+            score: this.life
+        })
+    },
+    fireQiu() {
+        // cc.log('fireQiu')
+        var qiu = cc.instantiate(this.qiuPrefab);
+        this.totalStar++;
+        qiu.getComponent('qiu').game = this
+        this.node.addChild(qiu);
+    },
+    addStar() {
+        // cc.log('addSushi')
+        var star = cc.instantiate(this.starPrefab);
+        this.totalStar++;
+        star.getComponent('star').game = this
+        this.node.addChild(star);
+        // sushi.setPosition(this.getNewSushiPosition());
+        star.setPosition(this.getNewRandomPosition(star));
+        // var dorpAction = cc.moveTo(this.timeStep, cc.p(sushi.x, -cc.winSize.height / 2 - 50));
+        // sushi.runAction(dorpAction);
+        // this.sushiList.push(sushi)
+    },
     addSushi() {
+        // cc.log('addSushi')
         var sushi = cc.instantiate(this.sushiPrefab);
         this.total++;
         sushi.getComponent('sushi').game = this
         this.node.addChild(sushi);
-        sushi.setPosition(this.getNewSushiPosition());
-        var dorpAction = cc.moveTo(this.timeStep, cc.p(sushi.x, -cc.winSize.height / 2 - 50));
-        sushi.runAction(dorpAction);
-        this.sushiList.push(sushi)
+        // sushi.setPosition(this.getNewSushiPosition());
+        sushi.setPosition(this.getNewRandomPosition(sushi));
+        // var dorpAction = cc.moveTo(this.timeStep, cc.p(sushi.x, -cc.winSize.height / 2 - 50));
+        // sushi.runAction(dorpAction);
+        // this.sushiList.push(sushi)
     },
     getNewSushiPosition() {
         var y = cc.winSize.height / 2 - 50;
         var x = cc.winSize.width / 2 - cc.winSize.width * cc.random0To1();
         // console.log('x, y:', x, y, cc.winSize.width)
         return cc.p(x, y);
+    },
+    getNewRandomPosition: function (sushi) {
+        var randX = 0;
+        // 根据地平面位置和主角跳跃高度，随机得到一个星星的 y 坐标
+        var randY = 0;
+        var maxY = cc.winSize.height / 2 - 100;
+        // 根据屏幕宽度，随机得到一个星星 x 坐标
+        var maxX = cc.winSize.width / 2 - sushi.width/2;
+        randX = cc.randomMinus1To1() * maxX;
+        randY = cc.randomMinus1To1() * maxY;
+        // 返回星星坐标
+        return cc.p(randX, randY);
     },
     removeSushi() {
         //移除到屏幕底部的sushi
@@ -187,8 +253,53 @@ cc.Class({
         }
     },
 
+    readyAction (num, callback) {
+        let self = this;
+        // var goNumber = cc.Label();
+        // this.node.addChild(goNumber);
+        // goNumber.setPosition(0, 0);
+        console.log('test', num)
+        // 放大效果
+        // let scaleAction = cc.scaleTo(1, 8);
+        // self.numberDisplay.string = num > 0 ? num + '' : 'Go';
+        // self.numberDisplay.node.setScale(1);
+        // self.numberDisplay.node.runAction(scaleAction);
+
+        // 闪烁效果
+        let blinkAction = cc.blink(1, 1);
+        self.numberDisplay.string = num > 0 ? num + '' : 'Go';
+        self.numberDisplay.node.runAction(blinkAction);
+        if (num >= 0){
+            setTimeout(function(){
+                self.readyAction(--num)
+            }, 1000)
+        }else{
+            console.log('schedule', num)
+            self.numberDisplay.string = '';
+            self.numberDisplay.node.setScale(1);
+            // self.addSushi();
+            // self.addStar();
+            // self.fireQiu();
+            let onMouseMove = (event) => {
+                self.mousePosX = event._x;
+                self.mousePosY = event._y;
+                // cc.log('game move....', event._x, event._y)
+            }
+            self.node.on('mousemove', onMouseMove, this.node)
+            self.schedule(self.addSushi, 1.5, 16 * 1024, 0.8);
+            self.schedule(self.addStar, 1, 16 * 1024, 1);
+        }
+        
+    },
+
+    addMove (callback) {
+        
+        this.node.on('mousemove', callback, this.node)
+    },
+
     start() {
-        this.schedule(this.addSushi, 0.5, 16 * 1024, 0.2);
+        this.readyAction(3);
+        // this.schedule(this.addSushi, 0.5, 16 * 1024, 0.2);
         this.host = 'ws://localhost:3000/'
         this.client = new WebSocket(this.host, 'echo-protocol');
 
@@ -246,6 +357,6 @@ cc.Class({
     },
 
     update(dt) {
-        this.removeSushi()
+        // this.removeSushi()
     }
 });

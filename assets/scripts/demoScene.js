@@ -80,7 +80,7 @@ cc.Class({
     },
 
     start () {     
-        let score = cc.sys.localStorage.getItem('score')
+        let score = cc.sys.localStorage.getItem('score') || '0'
         let userId = cc.sys.localStorage.getItem('userId')
         // var url = 'http://localhost:3000/users?id=' + userId
         // httpHelper.get(url, (isSuccess, res) => {
