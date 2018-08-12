@@ -120,7 +120,7 @@ cc.Class({
             this.createDisappearAction();
         }
         if (this.timer > this.starDuration) {
-            cc.log('destroy!')
+            // cc.log('destroy!')
             this.node.destroy();
         }
         // cc.log('this.startMove', this.startMove)
@@ -134,7 +134,7 @@ cc.Class({
             let self = this;
             this.node.opacity = 255;
             // cc.log('update', self.game.mousePosX, self.game.mousePosY)
-            let worldPos = cc.v2(self.game.mousePosX - 320, self.game.mousePosY - 400)
+            let worldPos = cc.v2(self.game.mousePosX - cc.winSize.width/2, self.game.mousePosY - cc.winSize.height/2)
             // cc.log('update pos', pos, worldPos)
             this.node.setPosition(worldPos)
         }     

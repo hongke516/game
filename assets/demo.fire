@@ -96,8 +96,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 640,
-      "height": 800
+      "width": 750,
+      "height": 1334
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -105,8 +105,8 @@
     "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 320,
-      "y": 400
+      "x": 375,
+      "y": 667
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -117,7 +117,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "background",
+    "_name": "图层0",
     "_objFlags": 0,
     "_parent": {
       "__id__": 2
@@ -131,7 +131,7 @@
       }
     ],
     "_prefab": null,
-    "_id": "b3qr1fPGlNp6I1RCMShFB7",
+    "_id": "9bwILZnpVEsJlUbYKM24ih",
     "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
@@ -148,8 +148,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 640,
-      "height": 1136
+      "width": 750,
+      "height": 1334
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -176,7 +176,7 @@
     },
     "_enabled": true,
     "_spriteFrame": {
-      "__uuid__": "9908a5a1-e1b7-4250-926e-00082a7d0772"
+      "__uuid__": "6135775f-885a-449e-a86f-d49a5e81440b"
     },
     "_type": 0,
     "_sizeMode": 1,
@@ -502,10 +502,10 @@
     "_enabled": true,
     "_designResolution": {
       "__type__": "cc.Size",
-      "width": 640,
-      "height": 800
+      "width": 750,
+      "height": 1334
     },
-    "_fitWidth": true,
+    "_fitWidth": false,
     "_fitHeight": true
   },
   {
@@ -521,6 +521,7 @@
     },
     "placeDisplay": {
       "__id__": 12
-    }
+    },
+    "startButton": null
   }
 ]
