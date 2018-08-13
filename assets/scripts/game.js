@@ -77,6 +77,22 @@ cc.Class({
             default: null,
             type: cc.Prefab
         },
+        stonePrefab: {
+            default: null,
+            type: cc.Prefab
+        },
+        fireStonePrefab: {
+            default: null,
+            type: cc.Prefab
+        },
+        myDapao: {
+            default: null,
+            type: cc.Node
+        },
+        myGuo: {
+            default: null,
+            type: cc.Node
+        },
         home: {
             default: null,
             type: cc.Node
@@ -154,6 +170,12 @@ cc.Class({
         qiu.getComponent('qiu').game = this
         this.node.addChild(qiu);
     },
+    fireStone() {
+        // cc.log('fireQiu')
+        var fireStone = cc.instantiate(this.fireStonePrefab);
+        fireStone.getComponent('fireStone').game = this
+        this.node.addChild(fireStone);
+    },
     addStar() {
         // cc.log('addSushi')
         var star = cc.instantiate(this.starPrefab);
@@ -174,6 +196,17 @@ cc.Class({
         this.node.addChild(sushi);
         // sushi.setPosition(this.getNewSushiPosition());
         sushi.setPosition(this.getNewRandomPosition(sushi));
+        // var dorpAction = cc.moveTo(this.timeStep, cc.p(sushi.x, -cc.winSize.height / 2 - 50));
+        // sushi.runAction(dorpAction);
+        // this.sushiList.push(sushi)
+    },
+    addStone() {
+        // cc.log('addSushi')
+        var stone = cc.instantiate(this.stonePrefab);
+        stone.getComponent('stone').game = this
+        this.node.addChild(stone);
+        // sushi.setPosition(this.getNewSushiPosition());
+        stone.setPosition(this.getNewRandomPosition(stone));
         // var dorpAction = cc.moveTo(this.timeStep, cc.p(sushi.x, -cc.winSize.height / 2 - 50));
         // sushi.runAction(dorpAction);
         // this.sushiList.push(sushi)
@@ -286,7 +319,7 @@ cc.Class({
                 // cc.log('game move....', event._x, event._y)
             }
             self.node.on('mousemove', onMouseMove, this.node)
-            self.schedule(self.addSushi, 1.5, 16 * 1024, 0.8);
+            self.schedule(self.addStone, 1.5, 16 * 1024, 0.8);
             self.schedule(self.addStar, 1, 16 * 1024, 1);
         }
         

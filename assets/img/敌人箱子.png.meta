@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "26d4d46c-dd17-4758-9ea7-ed2839df2937",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "敌人箱子": {
+      "ver": "1.0.3",
+      "uuid": "d03cb36e-951f-42c8-899b-98cb380ffae9",
+      "rawTextureUuid": "26d4d46c-dd17-4758-9ea7-ed2839df2937",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 144,
+      "height": 145,
+      "rawWidth": 144,
+      "rawHeight": 145,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
