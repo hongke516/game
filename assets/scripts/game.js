@@ -19,11 +19,22 @@ cc.Class({
         timeStep: 4,
         life: 3,
         score: 0,
+        stonePoint: null,
         total: 0,
+        sunNum: 0,
+        stoneNum: 0,
         totalStar: 0,
         clinet: null,
         mousePosX: 0,
         mousePosY: 0,
+        stoneDisplay: {
+            default: null,
+            type: cc.Label
+        },
+        sunDisplay: {
+            default: null,
+            type: cc.Label
+        },
         numberDisplay: {
             default: null,
             type: cc.Label
@@ -77,6 +88,10 @@ cc.Class({
             default: null,
             type: cc.Prefab
         },
+        sunPrefab: {
+            default: null,
+            type: cc.Prefab
+        },
         stonePrefab: {
             default: null,
             type: cc.Prefab
@@ -93,11 +108,15 @@ cc.Class({
             default: null,
             type: cc.Node
         },
-        home: {
+        zhuozi: {
             default: null,
             type: cc.Node
         },
-        starHome: {
+        cao: {
+            default: null,
+            type: cc.Node
+        },
+        opponent: {
             default: null,
             type: cc.Node
         }
@@ -153,6 +172,26 @@ cc.Class({
             score: this.score
         })
     },
+    gainSun: function () {
+        this.sunNum += 1;
+        // 更新 scoreDisplay Label 的文字
+        this.sunDisplay.string = this.sunNum.toString();
+        // this.sendMsg({
+        //     action: 'gainScore',
+        //     id: this.id,
+        //     score: this.score
+        // })
+    },
+    gainStone: function () {
+        this.stoneNum += 1;
+        // 更新 scoreDisplay Label 的文字
+        this.stoneDisplay.string = this.stoneNum.toString();
+        // this.sendMsg({
+        //     action: 'gainScore',
+        //     id: this.id,
+        //     score: this.score
+        // })
+    },
     gainLife: function () {
         this.life += 1;
         // 更新 scoreDisplay Label 的文字
@@ -170,11 +209,51 @@ cc.Class({
         qiu.getComponent('qiu').game = this
         this.node.addChild(qiu);
     },
+    getRandomPosition2(fireStone) {
+        var randX = 0;
+        // 根据地平面位置和主角跳跃高度，随机得到一个星星的 y 坐标
+        var randY = 0;
+        var maxY = this.opponent.height / 2
+        // 根据屏幕宽度，随机得到一个星星 x 坐标
+        var maxX = this.opponent.width / 2
+        randX = cc.randomMinus1To1() * maxX
+        randY = cc.randomMinus1To1() * maxY + this.opponent.y
+        // 返回星星坐标
+        return cc.p(randX, randY);
+    },
+    getAngle() {
+        let homePoint = cc.p(this.myDapao.x, this.myDapao.y)
+        let x = homePoint.x - this.stonePoint.x
+        let y = homePoint.y - this.stonePoint.y
+        let tan = x / y
+        let A = Math.atan(tan) * 180 / Math.PI
+        return A
+    },
+    dapaoChange (callback) {
+        // 旋转角度
+        self = this
+        let A = this.getAngle()
+        let jumpAction = cc.rotateTo(0.5, A)
+        let jumpActionBack = cc.rotateTo(0.5, 0)
+        let finish = cc.callFunc(callback, self)
+        let seq = cc.sequence(jumpAction, finish, jumpActionBack)
+        this.myDapao.runAction(seq)
+    },
     fireStone() {
         // cc.log('fireQiu')
-        var fireStone = cc.instantiate(this.fireStonePrefab);
+        var fireStone = cc.instantiate(this.fireStonePrefab)
         fireStone.getComponent('fireStone').game = this
-        this.node.addChild(fireStone);
+        this.stonePoint = this.getRandomPosition2(fireStone)
+        this.dapaoChange(()=>{
+            this.node.addChild(fireStone)
+        })
+    },
+    addSun() {
+        // cc.log('addSun')
+        var sun = cc.instantiate(this.sunPrefab);
+        sun.getComponent('sun').game = this
+        this.node.addChild(sun);
+        sun.setPosition(this.getNewRandomPosition(sun));
     },
     addStar() {
         // cc.log('addSushi')
@@ -221,7 +300,7 @@ cc.Class({
         var randX = 0;
         // 根据地平面位置和主角跳跃高度，随机得到一个星星的 y 坐标
         var randY = 0;
-        var maxY = cc.winSize.height / 2 - 100;
+        var maxY = this.zhuozi.y - 100;
         // 根据屏幕宽度，随机得到一个星星 x 坐标
         var maxX = cc.winSize.width / 2 - sushi.width/2;
         randX = cc.randomMinus1To1() * maxX;
@@ -320,7 +399,7 @@ cc.Class({
             }
             self.node.on('mousemove', onMouseMove, this.node)
             self.schedule(self.addStone, 1.5, 16 * 1024, 0.8);
-            self.schedule(self.addStar, 1, 16 * 1024, 1);
+            self.schedule(self.addSun, 1, 16 * 1024, 1);
         }
         
     },

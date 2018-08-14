@@ -56,7 +56,7 @@ cc.Class({
         // let blinkAction = cc.bezierTo(2, points)
         // this.node.runAction(blinkAction);
         self = this;
-        let pos = this.getRandomPosition()
+        let pos = this.game.stonePoint
         let finish = cc.callFunc(self.finishAction, self)
         let jumpAction = cc.jumpTo(2, pos, 100, 1)
         let seq = cc.sequence(jumpAction, finish)

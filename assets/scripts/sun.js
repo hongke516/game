@@ -88,20 +88,20 @@ cc.Class({
         if(this.atHome) {
             return;
         }
-        this.atHome = true
-        this.game.gainStone()
-        cc.log('createDisappearAction', this.atHome)
-        // var anim = this.getComponent(cc.Animation);
-        // anim.play('test');
-        // this.game.fireQiu();
-        this.finishAction()
-        this.game.fireStone()
+        this.atHome = true;
+        this.game.gainSun()
+        cc.log('createDisappearAction', this.atHome);
+
+        self = this;
+        let finish = cc.callFunc(self.finishAction, self)
+        let jumpAction = cc.blink(1, 3)
+        let seq = cc.sequence(jumpAction, finish)
+        this.node.runAction(seq);
     },
 
     getHomeDistance: function () {
         // 根据 home 节点位置判断距离
-        // let homePos = this.game.home.getPosition();
-        let homePos = this.game.myDapao.getPosition();
+        let homePos = this.game.myGuo.getPosition();
         // 根据两点位置计算两点之间距离
         let dist = cc.pDistance(this.node.position, homePos);
         return dist;
@@ -125,7 +125,7 @@ cc.Class({
         }
         // cc.log('this.startMove', this.startMove)
         if (!this.startMove){
-            // 根据 Game 脚本中的计时器更新透明度
+               // 根据 Game 脚本中的计时器更新透明度
             var opacityRatio = 1 - this.timer/this.starDuration;
             var minOpacity = 50;
             this.node.opacity = minOpacity + Math.floor(opacityRatio * (255 - minOpacity));
@@ -135,12 +135,11 @@ cc.Class({
                 return
             }
             let self = this;
-            this.node.opacity = 255
+            this.node.opacity = 255;
             // cc.log('update', self.game.mousePosX, self.game.mousePosY)
-            let worldPos = cc.v2(self.game.mousePosX - cc.winSize.width / 2, self.game.mousePosY - cc.winSize.height / 2)
+            let worldPos = cc.v2(self.game.mousePosX - cc.winSize.width/2, self.game.mousePosY - cc.winSize.height/2)
             // cc.log('update pos', pos, worldPos)
             this.node.setPosition(worldPos)
-        }    
-        
+        }     
     },
 });
