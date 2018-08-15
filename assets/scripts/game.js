@@ -21,6 +21,10 @@ cc.Class({
         score: 0,
         stonePoint: null,
         total: 0,
+        urls: null,
+        assets: null,
+        oBloodNum: 6,
+        mbloodNum: 6,
         sunNum: 0,
         stoneNum: 0,
         totalStar: 0,
@@ -116,6 +120,14 @@ cc.Class({
             default: null,
             type: cc.Node
         },
+        oblood: {
+            default: null,
+            type: cc.Node
+        },
+        mblood: {
+            default: null,
+            type: cc.Node
+        },
         opponent: {
             default: null,
             type: cc.Node
@@ -154,10 +166,10 @@ cc.Class({
         // 更新 scoreDisplay Label 的文字
         this.lifeDisplay1.string = 'Life: ' + this.life.toString();
         if (this.life === 0) {
-            this.gameOver()
+            this.returnStart()
         }
     },
-    gameOver() {
+    returnStart() {
         cc.sys.localStorage.setItem('score', this.score)
         this.client.close()
         cc.director.loadScene('demo');
@@ -182,8 +194,30 @@ cc.Class({
         //     score: this.score
         // })
     },
+    gameOver: function(){
+        console.log('game over')
+        this.unschedule(this.addStone)
+        this.unschedule(this.addSun)
+    },
+    setOblood: function(value){
+        
+        if((value === 1 && this.oBloodNum < 6) || (value === -1 && this.oBloodNum > 0)) {
+            this.oBloodNum += value
+        }
+        if (this.oBloodNum === 0) {
+            this.gameOver()
+        }
+        let sprite = this.oblood.getComponent(cc.Sprite)
+        let atlas = sprite.spriteFrame.getTexture()
+        let spriteFrame = sprite.spriteFrame
+        // spriteFrame.spriteFrame = 
+        console.log('333', sprite, atlas, spriteFrame)
+        let url = 'resources/blood/2-' + this.oBloodNum + 'x.png'
+        spriteFrame.setTexture(cc.url.raw(url))
+    },
     gainStone: function () {
         this.stoneNum += 1;
+        this.setOblood(-1)
         // 更新 scoreDisplay Label 的文字
         this.stoneDisplay.string = this.stoneNum.toString();
         // this.sendMsg({
@@ -370,6 +404,11 @@ cc.Class({
         // var goNumber = cc.Label();
         // this.node.addChild(goNumber);
         // goNumber.setPosition(0, 0);
+        cc.loader.loadResDir("blood", cc.SpriteFrame, function (err, assets, urls) {
+            console.log('load', assets, urls)
+            // this.urls = urls
+            // this.assets = assets
+        });
         console.log('test', num)
         // 放大效果
         // let scaleAction = cc.scaleTo(1, 8);
@@ -397,6 +436,10 @@ cc.Class({
                 self.mousePosY = event._y;
                 // cc.log('game move....', event._x, event._y)
             }
+            // let sprite = self.oblood.getComponent(cc.Sprite)
+            // let spriteFrame = sprite.spriteFrame
+            // console.log('sss', spriteFrame)
+            // spriteFrame._setRawAsset('res/raw-assets/img/')
             self.node.on('mousemove', onMouseMove, this.node)
             self.schedule(self.addStone, 1.5, 16 * 1024, 0.8);
             self.schedule(self.addSun, 1, 16 * 1024, 1);
