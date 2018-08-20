@@ -13,7 +13,7 @@ cc.Class({
  
     properties: {
         // 暂存 Game 对象的引用
-        pickRadius: 50,
+        pickRadius: 100,
         isDeleted: false,
         startMove: false,
         atHome: false,
@@ -51,9 +51,11 @@ cc.Class({
     onLoad () {
         var self = this;
         function onMouseDown (event) {
+            cc.log('donw....', event) 
             if (self.isDeleted) {
                 return;
             }
+            self.game.setMousePoint(event.currentTouch._point)
             self.isDeleted = true;
             self.startMove = true;
             // self.game.gainScore()
@@ -71,9 +73,10 @@ cc.Class({
         //     self.node.setPosition(pos)
         //     cc.log('move....', event._x, event._y, pos)       
         // }
-        this.node.on('mousedown', onMouseDown, this.node)
-        this.node.on('mouseup', onMouseUp, this.node)
-
+        // this.node.on('mousedown', onMouseDown, this.node)
+        // this.node.on('mouseup', onMouseUp, this.node)
+        this.node.on('touchstart', onMouseDown, this.node)
+        this.node.on('touchend', onMouseUp, this.node)
         // 重置计时器，根据消失时间范围随机取一个值
         this.starDuration = this.minStarDuration + cc.random0To1() * (this.maxStarDuration - this.minStarDuration);
         this.timer = 0;
@@ -116,11 +119,11 @@ cc.Class({
         // cc.log('getHomeDistance', this.getHomeDistance())
         if (this.getHomeDistance() < this.pickRadius) {
             // 调用收集行为
-            cc.log('pickRadius', this.pickRadius)
+            cc.log('stone pickRadius', this.pickRadius)
             this.createDisappearAction();
         }
         if (this.timer > this.starDuration) {
-            // cc.log('destroy!')
+            cc.log('destroy!')
             this.node.destroy();
         }
         // cc.log('this.startMove', this.startMove)

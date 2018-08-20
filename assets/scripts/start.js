@@ -71,7 +71,8 @@ cc.Class({
             cc.director.loadScene('playSence');
             
         }
-        this.node.on('mousedown', onMouseDown, this.node)
+        // this.node.on('mousedown', onMouseDown, this.node)
+        this.node.on('touchstart', onMouseDown, this.node)
     },
 
     go () {

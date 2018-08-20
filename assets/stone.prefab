@@ -97,7 +97,7 @@
       "__id__": 1
     },
     "_enabled": true,
-    "pickRadius": 50,
+    "pickRadius": 75,
     "isDeleted": false,
     "startMove": false,
     "atHome": false,

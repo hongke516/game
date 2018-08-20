@@ -43,55 +43,7 @@ cc.Class({
             default: null,
             type: cc.Label
         },
-        nameDisplay1: {
-            default: null,
-            type: cc.Label
-        },
-        lifeDisplay1: {
-            default: null,
-            type: cc.Label
-        },
-        scoreDisplay1: {
-            default: null,
-            type: cc.Label
-        },
-        nameDisplay2: {
-            default: null,
-            type: cc.Label
-        },
-        lifeDisplay2: {
-            default: null,
-            type: cc.Label
-        },
-        scoreDisplay2: {
-            default: null,
-            type: cc.Label
-        },
-        nameDisplay3: {
-            default: null,
-            type: cc.Label
-        },
-        lifeDisplay3: {
-            default: null,
-            type: cc.Label
-        },
-        scoreDisplay3: {
-            default: null,
-            type: cc.Label
-        },
         scheduler: null,
-        sushiPrefab: {
-            default: null,
-            type: cc.Prefab
-        },
-        starPrefab: {
-            default: null,
-            type: cc.Prefab
-        },
-        qiuPrefab: {
-            default: null,
-            type: cc.Prefab
-        },
         sunPrefab: {
             default: null,
             type: cc.Prefab
@@ -129,6 +81,10 @@ cc.Class({
             type: cc.Node
         },
         opponent: {
+            default: null,
+            type: cc.Node
+        },
+        photo: {
             default: null,
             type: cc.Node
         }
@@ -171,8 +127,8 @@ cc.Class({
     },
     returnStart() {
         cc.sys.localStorage.setItem('score', this.score)
-        this.client.close()
-        cc.director.loadScene('demo');
+        // this.client.close()
+        cc.director.loadScene('startSence');
     },
     gainScore: function () {
         this.score += 1;
@@ -198,6 +154,8 @@ cc.Class({
         console.log('game over')
         this.unschedule(this.addStone)
         this.unschedule(this.addSun)
+        var self = this
+        setTimeout(this.returnStart, 3000)
     },
     setOblood: function(value){
         
@@ -211,13 +169,26 @@ cc.Class({
         let atlas = sprite.spriteFrame.getTexture()
         let spriteFrame = sprite.spriteFrame
         // spriteFrame.spriteFrame = 
-        console.log('333', sprite, atlas, spriteFrame)
+        // console.log('333', sprite, atlas, spriteFrame)
         let url = 'resources/blood/2-' + this.oBloodNum + 'x.png'
+        spriteFrame.setTexture(cc.url.raw(url))
+    },
+    cryOpponent: function(){
+        this.setOpponent(-1)
+        setTimeout(()=>{
+            this.setOpponent(1)
+        }, 600)
+    },
+    setOpponent: function(val){
+        let sprite = this.opponent.getComponent(cc.Sprite)
+        let atlas = sprite.spriteFrame.getTexture()
+        let spriteFrame = sprite.spriteFrame
+        let url = val === -1 ? 'resources/cry.png':'resources/ori.png'
         spriteFrame.setTexture(cc.url.raw(url))
     },
     gainStone: function () {
         this.stoneNum += 1;
-        this.setOblood(-1)
+        // this.setOblood(-1)
         // 更新 scoreDisplay Label 的文字
         this.stoneDisplay.string = this.stoneNum.toString();
         // this.sendMsg({
@@ -238,10 +209,10 @@ cc.Class({
     },
     fireQiu() {
         // cc.log('fireQiu')
-        var qiu = cc.instantiate(this.qiuPrefab);
-        this.totalStar++;
-        qiu.getComponent('qiu').game = this
-        this.node.addChild(qiu);
+        // var qiu = cc.instantiate(this.qiuPrefab);
+        // this.totalStar++;
+        // qiu.getComponent('qiu').game = this
+        // this.node.addChild(qiu);
     },
     getRandomPosition2(fireStone) {
         var randX = 0;
@@ -265,7 +236,7 @@ cc.Class({
     },
     dapaoChange (callback) {
         // 旋转角度
-        self = this
+        let self = this
         let A = this.getAngle()
         let jumpAction = cc.rotateTo(0.5, A)
         let jumpActionBack = cc.rotateTo(0.5, 0)
@@ -275,11 +246,11 @@ cc.Class({
     },
     fireStone() {
         // cc.log('fireQiu')
-        var fireStone = cc.instantiate(this.fireStonePrefab)
-        fireStone.getComponent('fireStone').game = this
-        this.stonePoint = this.getRandomPosition2(fireStone)
-        this.dapaoChange(()=>{
-            this.node.addChild(fireStone)
+        var fStone = cc.instantiate(this.fireStonePrefab)
+        fStone.getComponent('fireStone').game = this
+        this.stonePoint = this.getRandomPosition2(fStone)
+        this.dapaoChange(() => {
+            this.node.addChild(fStone)
         })
     },
     addSun() {
@@ -398,18 +369,21 @@ cc.Class({
             this.client.send(JSON.stringify(jsonData));
         }
     },
-
+    setMousePoint(point) {
+        this.mousePosX = point.x;
+        this.mousePosY = point.y;
+    },
     readyAction (num, callback) {
         let self = this;
         // var goNumber = cc.Label();
         // this.node.addChild(goNumber);
         // goNumber.setPosition(0, 0);
-        cc.loader.loadResDir("blood", cc.SpriteFrame, function (err, assets, urls) {
-            console.log('load', assets, urls)
-            // this.urls = urls
-            // this.assets = assets
-        });
-        console.log('test', num)
+        // cc.loader.loadResDir("blood", cc.SpriteFrame, function (err, assets, urls) {
+        //     // console.log('load', assets, urls)
+        //     // this.urls = urls
+        //     // this.assets = assets
+        // });
+        // console.log('test', num)
         // 放大效果
         // let scaleAction = cc.scaleTo(1, 8);
         // self.numberDisplay.string = num > 0 ? num + '' : 'Go';
@@ -431,16 +405,24 @@ cc.Class({
             // self.addSushi();
             // self.addStar();
             // self.fireQiu();
+            // this.fireStone();
             let onMouseMove = (event) => {
                 self.mousePosX = event._x;
                 self.mousePosY = event._y;
-                // cc.log('game move....', event._x, event._y)
+                // cc.log('game move....', event, event._x, event._y)
+            }
+            let onTouchMove = (event) => {
+                self.mousePosX = event.currentTouch._point.x;
+                self.mousePosY = event.currentTouch._point.y;
+                // cc.log('move....', event, event.currentTouch._point.x, event.currentTouch._point.y)
             }
             // let sprite = self.oblood.getComponent(cc.Sprite)
             // let spriteFrame = sprite.spriteFrame
             // console.log('sss', spriteFrame)
             // spriteFrame._setRawAsset('res/raw-assets/img/')
-            self.node.on('mousemove', onMouseMove, this.node)
+            // self.node.on('mousemove', onMouseMove, this.node)
+            self.node.on('touchmove', onTouchMove, this.node)
+            // self.addStone()
             self.schedule(self.addStone, 1.5, 16 * 1024, 0.8);
             self.schedule(self.addSun, 1, 16 * 1024, 1);
         }
@@ -452,63 +434,93 @@ cc.Class({
         this.node.on('mousemove', callback, this.node)
     },
 
+    setPhoto(){
+        let photoUrl = cc.sys.localStorage.getItem('photoUrl')
+        cc.loader.load(photoUrl, function(err,tex){
+            if(err)
+            {
+                console.log('error', err);
+            }
+            else
+            {              
+                let sprite = this.photo.getComponent(cc.Sprite)
+                sprite.spriteFrame.setTexture(tex);
+            }
+        });
+    },
     start() {
+        cc.loader.loadResDir("blood", cc.SpriteFrame, function (err, assets, urls) {
+            // console.log('load', assets, urls)
+            // this.urls = urls
+            // this.assets = assets
+        });
+        cc.loader.loadRes("cry", cc.SpriteFrame, function (err, assets, urls) {
+            // console.log('load', assets, urls)
+            // this.urls = urls
+            // this.assets = assets
+        });
+        cc.loader.loadRes("ori", cc.SpriteFrame, function (err, assets, urls) {
+            // console.log('load', assets, urls)
+            // this.urls = urls
+            // this.assets = assets
+        });
+        
         this.readyAction(3);
         // this.schedule(this.addSushi, 0.5, 16 * 1024, 0.2);
-        this.host = 'ws://localhost:3000/'
-        this.client = new WebSocket(this.host, 'echo-protocol');
+        // this.host = 'ws://localhost:3000/'
+        // this.client = new WebSocket(this.host, 'echo-protocol');
 
-        this.client.onerror = function () {
-            console.log('Connection Error');
-        };
-        var self = this;
-        this.client.onopen = function () {
-            console.log('WebSocket Client Connected');
-            self.id = new Date().getTime()
-            cc.sys.localStorage.setItem('userId', self.id)
-            self.sendMsg({
-                action: 'online',
-                id: self.id
-            })
-        };
+        // this.client.onerror = function () {
+        //     console.log('Connection Error');
+        // };
+        // var self = this;
+        // this.client.onopen = function () {
+        //     console.log('WebSocket Client Connected');
+        //     self.id = new Date().getTime()
+        //     cc.sys.localStorage.setItem('userId', self.id)
+        //     self.sendMsg({
+        //         action: 'online',
+        //         id: self.id
+        //     })
+        // };
 
-        this.client.onclose = function () {
-            console.log('echo-protocol Client Closed');
-        };
+        // this.client.onclose = function () {
+        //     console.log('echo-protocol Client Closed');
+        // };
 
-        this.client.onmessage = function (e) {
-            console.log(555, e)
-            if (typeof e.data === 'string') {
-                console.log("Received: '" + e.data + "'");
-                let data = JSON.parse(e.data)
-                if (data.action === 'online') {
-                    for (let i = 0; i < data.users.length; i++) {
-                        if (data.users[i].id === self.id) {
-                            self.showTypeOfPlayer(1, 'name', data.users[i])
-                        } else {
-                            self.clearOtherPlayer()
-                            self.showOtherPlayer(data.users[i])
-                        }
-                    }
+        // this.client.onmessage = function (e) {
+        //     console.log(555, e)
+        //     if (typeof e.data === 'string') {
+        //         console.log("Received: '" + e.data + "'");
+        //         let data = JSON.parse(e.data)
+        //         if (data.action === 'online') {
+        //             for (let i = 0; i < data.users.length; i++) {
+        //                 if (data.users[i].id === self.id) {
+        //                     self.showTypeOfPlayer(1, 'name', data.users[i])
+        //                 } else {
+        //                     self.clearOtherPlayer()
+        //                     self.showOtherPlayer(data.users[i])
+        //                 }
+        //             }
 
-                } else if (data.action === 'offline') {
-                    self.clearOtherPlayer()
-                    for (let i = 0; i < data.users.length; i++) {
-                        if (data.users[i].id === self.id) {
-                            self.showTypeOfPlayer(1, 'name', data.users[i])
-                        } else {
-                            self.showOtherPlayer(data.users[i])
-                        }
-                    }
-                } else if (data.action === 'gainScore') {
-                    let player = self.otherPlayers.find(e => e.id === data.user.id)
-                    if (player) {
-                        let labelNum = player.labelNum
-                        self.showTypeOfPlayer(labelNum, 'score', data.user)
-                    }                    
-                }
-            }
-        };
+        //         } else if (data.action === 'offline') {
+        //             self.clearOtherPlayer()
+        //             for (let i = 0; i < data.users.length; i++) {
+        //                 if (data.users[i].id === self.id) {
+        //                     self.showTypeOfPlayer(1, 'name', data.users[i])
+        //                 } else {
+        //                     self.showOtherPlayer(data.users[i])
+        //                 }
+        //             }
+        //         } else if (data.action === 'gainScore') {
+        //             let player = self.otherPlayers.find(e => e.id === data.user.id)
+        //             if (player) {
+        //                 let labelNum = player.labelNum
+        //                 self.showTypeOfPlayer(labelNum, 'score', data.user)
+        //             }                    
+        //         }
+        //     }
+        // }
     },
 
     update(dt) {

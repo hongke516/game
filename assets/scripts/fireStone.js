@@ -36,6 +36,8 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
     finishAction() {
         this.node.destroy();
+        this.game.cryOpponent()
+        this.game.setOblood(-1)
     },
     // onLoad () {},
     getRandomPosition() {
@@ -55,13 +57,12 @@ cc.Class({
         // let points = [cc.p(243, -338), cc.p(10, 10), cc.p(140, 30)];
         // let blinkAction = cc.bezierTo(2, points)
         // this.node.runAction(blinkAction);
-        self = this;
+        let self = this;
         let pos = this.game.stonePoint
-        let finish = cc.callFunc(self.finishAction, self)
+        let finish = cc.callFunc(this.finishAction, this)
         let jumpAction = cc.jumpTo(2, pos, 100, 1)
         let seq = cc.sequence(jumpAction, finish)
         this.node.runAction(seq);
-        
         // 投食动画
         // let dorpAction = cc.moveTo(2, cc.p(0, 0));
         // let scaleBigAction = cc.scaleTo(1, 2);
